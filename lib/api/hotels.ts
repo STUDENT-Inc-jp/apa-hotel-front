@@ -1,6 +1,6 @@
 import { Hotel, CustomInfo } from '@/lib/types/hotel';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://apa-hotel.onrender.com';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://apa-hotel.onrender.com/api';
 
 export async function getHotelInfo(hotelId: string): Promise<Hotel> {
   const response = await fetch(`${API_BASE_URL}/hotels/${hotelId}`, {

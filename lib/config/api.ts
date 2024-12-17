@@ -1,5 +1,5 @@
 export const API_CONFIG = {
-  BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'https://apa-hotel.onrender.com',
+  BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'https://apa-hotel.onrender.com/api',
   ENDPOINTS: {
     AUTH: {
       LOGIN: '/users/login',

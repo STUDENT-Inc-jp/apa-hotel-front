@@ -1,6 +1,6 @@
 import { Review, ReviewFormData } from '@/lib/types/review';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://apa-hotel.onrender.com';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://apa-hotel.onrender.com/api';
 
 export async function createReview(data: ReviewFormData): Promise<Review> {
   const response = await fetch(`${API_BASE_URL}/reviews`, {
