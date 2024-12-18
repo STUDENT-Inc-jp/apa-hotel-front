@@ -34,11 +34,18 @@ export function CompanyInfo() {
 
   useEffect(() => {
     const fetchHotel = async () => {
-      if (!user?.hotelId) return;
+      console.log('User object in useEffect:', user);
 
+      if (!user?.hotelId) {
+        console.log('No hotelId found on user. Cannot fetch hotel.');
+        return;
+      }
+
+      console.log('Fetching hotel data for hotelId:', user.hotelId);
       try {
-        console.log('Fetching hotel data for hotelId:', user.hotelId);
-        const data = await fetchWithAuth(API_CONFIG.ENDPOINTS.HOTELS.INFO(user.hotelId));
+        const url = API_CONFIG.ENDPOINTS.HOTELS.INFO(user.hotelId);
+        console.log('API endpoint being fetched:', API_CONFIG.BASE_URL + url);
+        const data = await fetchWithAuth(url);
         console.log('Fetched hotel data:', data);
         setHotel(data);
       } catch (err: any) {
@@ -49,7 +56,7 @@ export function CompanyInfo() {
   }, [user?.hotelId]);
 
   if (!hotel) {
-    console.log('No hotel data available.'); 
+    console.log('No hotel data available at render time.');
     return <div>ホテル情報が見つかりません。</div>;
   }
 
@@ -69,7 +76,7 @@ export function CompanyInfo() {
 
   const handleSaveEdit = async (data: CompanyData) => {
     console.log('Saving edited data:', data);
-    // TODO: APIコールでホテル情報更新
+    // TODO: 実際のAPIコールをここに実装
     toast({
       title: '保存完了',
       description: 'ホテル情報を更新しました',
