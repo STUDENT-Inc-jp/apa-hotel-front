@@ -37,7 +37,9 @@ export function CompanyInfo() {
       if (!user?.hotelId) return;
 
       try {
+        console.log('Fetching hotel data for hotelId:', user.hotelId);
         const data = await fetchWithAuth(API_CONFIG.ENDPOINTS.HOTELS.INFO(user.hotelId));
+        console.log('Fetched hotel data:', data);
         setHotel(data);
       } catch (err: any) {
         console.error('Failed to fetch hotel data', err);
@@ -47,10 +49,12 @@ export function CompanyInfo() {
   }, [user?.hotelId]);
 
   if (!hotel) {
+    console.log('No hotel data available.'); 
     return <div>ホテル情報が見つかりません。</div>;
   }
 
   const handleStartEdit = () => {
+    console.log('Starting edit with data:', hotel);
     setEditData({
       name: hotel.name,
       respondents: hotel.respondents,
@@ -64,6 +68,7 @@ export function CompanyInfo() {
   };
 
   const handleSaveEdit = async (data: CompanyData) => {
+    console.log('Saving edited data:', data);
     // TODO: APIコールでホテル情報更新
     toast({
       title: '保存完了',
@@ -72,6 +77,8 @@ export function CompanyInfo() {
     setIsEditing(false);
     setEditData(null);
   };
+
+  console.log('Rendering CompanyInfo with hotel:', hotel);
 
   return (
     <Card>
