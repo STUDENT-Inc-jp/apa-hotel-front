@@ -1,44 +1,50 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/lib/auth-context';
-import { sampleHotels } from '@/lib/auth';
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/lib/auth-context";
+import { sampleHotels } from "@/lib/auth";
 
 interface ReviewFormProps {
-  onSubmit: (review: { content: string; rating: number; respondentName: string }) => void;
+  onSubmit: (review: {
+    content: string;
+    rating: number;
+    respondentName: string;
+    hotelId: string;
+  }) => void;
 }
 
 export function ReviewForm({ onSubmit }: ReviewFormProps) {
   const { user } = useAuth();
-  const hotel = sampleHotels.find(h => h.id === user?.hotelId);
-  const [content, setContent] = useState('');
-  const [rating, setRating] = useState<string>('');
-  const [respondentName, setRespondentName] = useState('');
+  const hotel = sampleHotels.find((h) => h.id === user?.hotelId);
+  const [content, setContent] = useState("");
+  const [rating, setRating] = useState<string>("");
+  const [respondentName, setRespondentName] = useState("jutori");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content || !rating || !respondentName) return;
-
+    if (!content || !rating) return;
     onSubmit({
       content,
       rating: parseInt(rating, 10),
       respondentName,
+      hotelId: user?.hotelId || "",
     });
+    console.log("hothhothoth", user);
 
-    setContent('');
-    setRating('');
-    setRespondentName('');
+    setContent("");
+    setRating("");
+    setRespondentName("");
   };
 
   return (
@@ -58,21 +64,18 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
               className="h-32"
             />
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="rating">評価</Label>
-              <Select
-                value={rating}
-                onValueChange={setRating}
-              >
+              <Select value={rating} onValueChange={setRating}>
                 <SelectTrigger id="rating">
                   <SelectValue placeholder="評価を選択してください" />
                 </SelectTrigger>
                 <SelectContent>
                   {[5, 4, 3, 2, 1].map((value) => (
                     <SelectItem key={value} value={value.toString()}>
-                      {'★'.repeat(value)} ({value})
+                      {"★".repeat(value)} ({value})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -80,10 +83,7 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="respondentName">回答担当者</Label>
-              <Select
-                value={respondentName}
-                onValueChange={setRespondentName}
-              >
+              <Select value={respondentName} onValueChange={setRespondentName}>
                 <SelectTrigger id="respondentName">
                   <SelectValue placeholder="担当者を選択してください" />
                 </SelectTrigger>

@@ -1,37 +1,42 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Lock, User } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/lib/auth-context';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Lock, User } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/lib/auth-context";
 
 export function LoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
       await login(email, password);
       toast({
-        title: 'ログイン成功',
-        description: 'ダッシュボードにリダイレクトします',
+        title: "ログイン成功",
+        description: "ダッシュボードにリダイレクトします",
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'ログインに失敗しました');
+      setError(err instanceof Error ? err.message : "ログインに失敗しました");
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +91,7 @@ export function LoginForm() {
         </CardContent>
         <CardFooter>
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'ログイン中...' : 'ログイン'}
+            {isLoading ? "ログイン中..." : "ログイン"}
           </Button>
         </CardFooter>
       </form>

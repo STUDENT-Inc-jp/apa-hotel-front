@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/lib/auth-context';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Pencil } from 'lucide-react';
-import { CompanyInfoItem } from './info-item';
-import { CompanyInfoEdit } from './info-edit';
-import { useToast } from '@/hooks/use-toast';
-import { fetchWithAuth } from '@/lib/fetchWithAuth';
-import { API_CONFIG } from '@/lib/config/api';
+import { useState, useEffect } from "react";
+import { useAuth } from "@/lib/auth-context";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Pencil } from "lucide-react";
+import { CompanyInfoItem } from "./info-item";
+import { CompanyInfoEdit } from "./info-edit";
+import { useToast } from "@/hooks/use-toast";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { API_CONFIG } from "@/lib/config/api";
 
 export type CompanyData = {
   name: string;
@@ -17,12 +17,12 @@ export type CompanyData = {
 };
 
 type Hotel = {
-  hotel_id: string;
+  hotelId: string;
   name: string;
   address: string;
   respondents: string[];
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export function CompanyInfo() {
@@ -34,34 +34,34 @@ export function CompanyInfo() {
 
   useEffect(() => {
     const fetchHotel = async () => {
-      console.log('User object in useEffect:', user);
+      console.log("User object in useEffect:", user);
 
       if (!user?.hotelId) {
-        console.log('No hotelId found on user. Cannot fetch hotel.');
+        console.log("No hotelId found on user. Cannot fetch hotel.");
         return;
       }
 
-      console.log('Fetching hotel data for hotelId:', user.hotelId);
+      console.log("Fetching hotel data for hotelId:", user.hotelId);
       try {
         const url = API_CONFIG.ENDPOINTS.HOTELS.INFO(user.hotelId);
-        console.log('API endpoint being fetched:', API_CONFIG.BASE_URL + url);
+        console.log("API endpoint being fetched:", API_CONFIG.BASE_URL + url);
         const data = await fetchWithAuth(url);
-        console.log('Fetched hotel data:', data);
+        console.log("Fetched hotel data:", data);
         setHotel(data);
       } catch (err: any) {
-        console.error('Failed to fetch hotel data', err);
+        console.error("Failed to fetch hotel data", err);
       }
     };
     fetchHotel();
   }, [user?.hotelId]);
 
   if (!hotel) {
-    console.log('No hotel data available at render time.');
+    console.log("No hotel data available at render time.");
     return <div>ホテル情報が見つかりません。</div>;
   }
 
   const handleStartEdit = () => {
-    console.log('Starting edit with data:', hotel);
+    console.log("Starting edit with data:", hotel);
     setEditData({
       name: hotel.name,
       respondents: hotel.respondents,
@@ -75,17 +75,17 @@ export function CompanyInfo() {
   };
 
   const handleSaveEdit = async (data: CompanyData) => {
-    console.log('Saving edited data:', data);
+    console.log("Saving edited data:", data);
     // TODO: 実際のAPIコールをここに実装
     toast({
-      title: '保存完了',
-      description: 'ホテル情報を更新しました',
+      title: "保存完了",
+      description: "ホテル情報を更新しました",
     });
     setIsEditing(false);
     setEditData(null);
   };
 
-  console.log('Rendering CompanyInfo with hotel:', hotel);
+  console.log("Rendering CompanyInfo with hotel:", hotel);
 
   return (
     <Card>
@@ -107,10 +107,14 @@ export function CompanyInfo() {
           <>
             <CompanyInfoItem label="ホテル名" value={hotel.name} />
             <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">回答担当者</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                回答担当者
+              </p>
               <div className="space-y-1">
                 {hotel.respondents.map((name, index) => (
-                  <p key={index} className="text-sm font-medium">{name}</p>
+                  <p key={index} className="text-sm font-medium">
+                    {name}
+                  </p>
                 ))}
               </div>
             </div>
