@@ -1,26 +1,50 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Pencil, Plus, Trash } from 'lucide-react';
-import { sampleHotels } from '@/lib/auth';
+import { Pencil } from 'lucide-react';
 import { CompanyInfoItem } from './info-item';
 import { CompanyInfoEdit } from './info-edit';
 import { useToast } from '@/hooks/use-toast';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
+import { API_CONFIG } from '@/lib/config/api';
 
 export type CompanyData = {
   name: string;
   respondents: string[];
 };
 
+type Hotel = {
+  hotel_id: string;
+  name: string;
+  address: string;
+  respondents: string[];
+  created_at: string;
+  updated_at: string;
+};
+
 export function CompanyInfo() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const hotel = sampleHotels.find(h => h.id === user?.hotelId);
+  const [hotel, setHotel] = useState<Hotel | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<CompanyData | null>(null);
+
+  useEffect(() => {
+    const fetchHotel = async () => {
+      if (!user?.hotelId) return;
+
+      try {
+        const data = await fetchWithAuth(API_CONFIG.ENDPOINTS.HOTELS.INFO(user.hotelId));
+        setHotel(data);
+      } catch (err: any) {
+        console.error('Failed to fetch hotel data', err);
+      }
+    };
+    fetchHotel();
+  }, [user?.hotelId]);
 
   if (!hotel) {
     return <div>ホテル情報が見つかりません。</div>;
@@ -40,7 +64,7 @@ export function CompanyInfo() {
   };
 
   const handleSaveEdit = async (data: CompanyData) => {
-    // 実際のAPIコールをここで行う
+    // TODO: APIコールでホテル情報更新
     toast({
       title: '保存完了',
       description: 'ホテル情報を更新しました',
