@@ -1,22 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, Pencil, X, Check, Trash, PlusCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { useCustomInfo } from '@/lib/hooks/use-custom-info';
+import { useAuth } from '@/lib/auth-context'; // ホテルID取得のため
+import { useCustomInfo } from '@/lib/hooks/use-custom-info'; // 既にbulkEdit対応済みとして
+import type { CustomInfo } from '@/lib/types/custom-info';
 
 export function CustomInfo() {
+  const { user } = useAuth();
   const { toast } = useToast();
+  
+  const hotelId = user?.hotelId || ''; // hotelIdを取得
   const {
     customInfo,
     addCustomInfo,
     updateCustomInfo,
     deleteCustomInfo,
-  } = useCustomInfo();
+  } = useCustomInfo(hotelId);
   
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -69,12 +74,21 @@ export function CustomInfo() {
     }
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!newInfo.category || newInfo.items.some(item => !item.value)) return;
 
-    addCustomInfo(newInfo.category, newInfo.items);
-    setIsAdding(false);
-    setNewInfo({ category: '', items: [{ id: '0', value: '' }] });
+    try {
+      await addCustomInfo(newInfo.category, newInfo.items);
+      setIsAdding(false);
+      setNewInfo({ category: '', items: [{ id: '0', value: '' }] });
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: 'エラー',
+        description: '固有情報の追加に失敗しました',
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleEdit = (info: CustomInfo) => {
@@ -82,15 +96,33 @@ export function CustomInfo() {
     setEditingId(info.id);
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (!editInfo || !editInfo.category || editInfo.items.some(item => !item.value)) return;
-    updateCustomInfo(editInfo);
-    setEditingId(null);
-    setEditInfo(null);
+    try {
+      await updateCustomInfo(editInfo);
+      setEditingId(null);
+      setEditInfo(null);
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: 'エラー',
+        description: '固有情報の更新に失敗しました',
+        variant: 'destructive',
+      });
+    }
   };
 
-  const handleDelete = (id: string) => {
-    deleteCustomInfo(id);
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteCustomInfo(id);
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: 'エラー',
+        description: '固有情報の削除に失敗しました',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
