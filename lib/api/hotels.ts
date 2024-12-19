@@ -57,8 +57,29 @@ export async function addCustomInfo(
   return response.json();
 }
 
-// 追加：カスタム情報をまとめて編集する関数
-// BulkEditPayloadの型を定義（必要に応じてlib/types等に定義してください）
+// ホテル情報更新用の関数を追加
+// dataオブジェクトには { name: string; respondents: string[] } などを渡す
+export async function updateHotelInfo(
+  hotelId: string,
+  data: { name: string; respondents: string[] }
+): Promise<Hotel> {
+  const response = await fetch(`${API_BASE_URL}/hotels/${hotelId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update hotel info");
+  }
+
+  return response.json();
+}
+
+// カスタム情報をまとめて編集する関数
 type BulkEditPayload = {
   inserts: { category: string; items: any[] }[];
   updates: { infoId: string; category: string; items: any[] }[];

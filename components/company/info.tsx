@@ -10,6 +10,7 @@ import { CompanyInfoEdit } from "./info-edit";
 import { useToast } from "@/hooks/use-toast";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { API_CONFIG } from "@/lib/config/api";
+import { updateHotelInfo } from "@/lib/api/hotels"; // ← ここで追加
 
 export type CompanyData = {
   name: string;
@@ -76,11 +77,36 @@ export function CompanyInfo() {
 
   const handleSaveEdit = async (data: CompanyData) => {
     console.log("Saving edited data:", data);
-    // TODO: 実際のAPIコールをここに実装
-    toast({
-      title: "保存完了",
-      description: "ホテル情報を更新しました",
-    });
+
+    if (!user?.hotelId) {
+      toast({
+        title: "エラー",
+        description: "ホテルIDが取得できませんでした。",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // 実際のAPIコールを行い、更新する
+      const updatedHotel = await updateHotelInfo(user.hotelId, {
+        name: data.name,
+        respondents: data.respondents,
+      });
+      setHotel(updatedHotel);
+      toast({
+        title: "保存完了",
+        description: "ホテル情報を更新しました",
+      });
+    } catch (err) {
+      console.error("Failed to update hotel data", err);
+      toast({
+        title: "エラー",
+        description: "ホテル情報の更新に失敗しました。",
+        variant: "destructive",
+      });
+    }
+
     setIsEditing(false);
     setEditData(null);
   };
