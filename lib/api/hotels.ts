@@ -108,3 +108,45 @@ export async function bulkEditCustomInfo(
 
   return response.json();
 }
+
+type CustomInfoItem = {
+  item_id: string;
+  value: string;
+};
+
+type CustomInfoPayload = {
+  category: string;
+  items: CustomInfoItem[];
+};
+
+type BulkEditPayload = {
+  inserts: CustomInfoPayload[];
+  updates: (CustomInfoPayload & { infoId: string })[];
+  deletes: { infoId: string }[];
+};
+
+export async function bulkEditCustomInfo(
+  hotelId: string,
+  payload: BulkEditPayload
+): Promise<CustomInfo[]> {
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_URL || "https://apa-hotel.onrender.com/api";
+
+  const response = await fetch(
+    `${API_BASE_URL}/hotels/${hotelId}/custom-info/bulk`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to bulk edit custom info");
+  }
+
+  return response.json();
+}
