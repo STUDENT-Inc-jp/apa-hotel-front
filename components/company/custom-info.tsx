@@ -6,9 +6,16 @@ import { bulkEditCustomInfo, getCustomInfo } from '@/lib/api/hotels';
 import type { CustomInfo } from '@/lib/types/hotel'; 
 import { useAuth } from '@/lib/auth-context';
 
-type CustomInfoItem = {
+// @/lib/types/custom-info.ts
+export type CustomInfoItem = {
   id: string;
   value: string;
+};
+
+export type CustomInfo = {
+  id: string;
+  category: string;
+  items: CustomInfoItem[];
 };
 
 export function useCustomInfo(hotelId: string) {

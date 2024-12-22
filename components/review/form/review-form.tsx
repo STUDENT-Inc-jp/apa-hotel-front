@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/lib/auth-context';
-import { sampleHotels } from '@/lib/auth';
+import { sampleHotels } from '@/lib/auth'; // 仮のホテルデータ
 import type { ReviewFormProps } from '../types';
 
 export function ReviewForm({ onSubmit }: ReviewFormProps) {
