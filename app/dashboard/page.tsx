@@ -6,9 +6,14 @@ import { ReviewAnalytics } from '@/components/dashboard/review-analytics';
 import { useReviews } from '@/lib/hooks/use-reviews';
 
 export default function DashboardPage() {
-  const { reviews } = useReviews();
-  const draftCount = reviews.filter(r => r.status === 'draft').length;
-  const completedCount = reviews.filter(r => r.status === 'completed').length;
+  const { reviews } = useReviews() || {}; 
+  // ↑ ここでデフォルト値 {} を返しておけば reviews が undefined のときでも参照エラーになりにくい
+  // もしくは const { reviews = [] } = useReviews(); のようにすると reviews が undefined 時は [] になる
+
+  const safeReviews = reviews || []; // reviews が undefined の場合は空配列扱い
+
+  const draftCount = safeReviews.filter(r => r.status === 'draft').length;
+  const completedCount = safeReviews.filter(r => r.status === 'completed').length;
 
   const stats = [
     {
