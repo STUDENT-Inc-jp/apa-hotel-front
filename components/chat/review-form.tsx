@@ -15,8 +15,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth-context";
 import { sampleHotels } from "@/lib/auth";
 
+// 受け取るonSubmitは、(reviewData) => void という形
 interface ReviewFormProps {
-  onSubmit: (review: {
+  onSubmit: (data: {
     content: string;
     rating: number;
     respondentName: string;
@@ -29,22 +30,25 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
   const hotel = sampleHotels.find((h) => h.id === user?.hotelId);
   const [content, setContent] = useState("");
   const [rating, setRating] = useState<string>("");
-  const [respondentName, setRespondentName] = useState("jutori");
+  const [respondentName, setRespondentName] = useState(
+    hotel?.respondents?.[0] || "フロントスタッフ"
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content || !rating) return;
+    if (!content || !rating || !respondentName) return;
+
     onSubmit({
       content,
       rating: parseInt(rating, 10),
       respondentName,
       hotelId: user?.hotelId || "",
     });
-    console.log("hothhothoth", user);
 
+    // Reset
     setContent("");
     setRating("");
-    setRespondentName("");
+    setRespondentName(hotel?.respondents?.[0] || "");
   };
 
   return (
@@ -54,6 +58,7 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* レビュー内容 */}
           <div className="space-y-2">
             <Label htmlFor="content">レビュー内容</Label>
             <Textarea
@@ -65,6 +70,7 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
             />
           </div>
 
+          {/* 評価 & 回答担当者 */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="rating">評価</Label>
@@ -88,7 +94,7 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
                   <SelectValue placeholder="担当者を選択してください" />
                 </SelectTrigger>
                 <SelectContent>
-                  {hotel?.respondents.map((name) => (
+                  {hotel?.respondents?.map((name) => (
                     <SelectItem key={name} value={name}>
                       {name}
                     </SelectItem>
@@ -98,6 +104,7 @@ export function ReviewForm({ onSubmit }: ReviewFormProps) {
             </div>
           </div>
 
+          {/* 送信ボタン */}
           <Button
             type="submit"
             className="w-full"

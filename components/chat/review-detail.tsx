@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Star, Clock, Pencil, Check, X, CheckCircle2 } from 'lucide-react';
-import type { Review } from '@/lib/types/review';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Star, Clock, Pencil, Check, X, CheckCircle2 } from "lucide-react";
+import type { Review } from "@/lib/types/review";
 
 interface ReviewDetailProps {
   review: Review;
@@ -18,20 +18,22 @@ interface ReviewDetailProps {
 export function ReviewDetail({ review, onSaveEdit }: ReviewDetailProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedResponse, setEditedResponse] = useState(
-    review.editedResponse || review.aiResponse || ''
+    review.editedResponse || review.aiResponse || ""
   );
 
-  const handleSave = (markAsCompleted: boolean = false) => {
+  const handleSave = (markAsCompleted = false) => {
     onSaveEdit(review, editedResponse, markAsCompleted);
     setIsEditing(false);
   };
 
   const handleCheck = () => {
-    onSaveEdit(review, review.editedResponse || review.aiResponse || '', true);
+    onSaveEdit(review, editedResponse, true);
+    setIsEditing(false);
   };
 
   return (
     <div className="space-y-6">
+      {/* レビュー内容 */}
       <div>
         <h3 className="font-semibold mb-2">レビュー内容</h3>
         <div className="bg-muted p-4 rounded-lg">
@@ -41,20 +43,21 @@ export function ReviewDetail({ review, onSaveEdit }: ReviewDetailProps) {
                 <Star
                   key={i}
                   className={`h-4 w-4 ${
-                    i < review.rating ? 'fill-current' : 'stroke-current'
+                    i < review.rating ? "fill-current" : "stroke-current"
                   }`}
                 />
               ))}
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock className="h-4 w-4" />
-              {review.date}
+              {review.date || "日時不明"}
             </div>
           </div>
           <p className="text-sm">{review.content}</p>
         </div>
       </div>
 
+      {/* AI生成回答 */}
       {review.aiResponse && (
         <div>
           <h4 className="font-semibold mb-2">AI生成回答</h4>
@@ -64,11 +67,12 @@ export function ReviewDetail({ review, onSaveEdit }: ReviewDetailProps) {
         </div>
       )}
 
+      {/* 編集済み回答 */}
       <div>
         <div className="flex items-center justify-between mb-2">
           <h4 className="font-semibold">編集済み回答</h4>
           <div className="flex gap-2">
-            {!isEditing && review.status === 'draft' && (
+            {!isEditing && review.status === "draft" && (
               <>
                 <Button
                   variant="outline"
@@ -84,7 +88,7 @@ export function ReviewDetail({ review, onSaveEdit }: ReviewDetailProps) {
                 </Button>
               </>
             )}
-            {!isEditing && review.status === 'completed' && (
+            {!isEditing && review.status === "completed" && (
               <Button
                 variant="outline"
                 size="sm"
@@ -109,9 +113,7 @@ export function ReviewDetail({ review, onSaveEdit }: ReviewDetailProps) {
                 size="sm"
                 onClick={() => {
                   setIsEditing(false);
-                  setEditedResponse(
-                    review.editedResponse || review.aiResponse || ''
-                  );
+                  setEditedResponse(review.editedResponse || review.aiResponse || "");
                 }}
               >
                 <X className="h-4 w-4 mr-2" />
@@ -126,7 +128,7 @@ export function ReviewDetail({ review, onSaveEdit }: ReviewDetailProps) {
         ) : (
           <div className="bg-muted p-4 rounded-lg">
             <p className="text-sm">
-              {review.editedResponse || review.aiResponse}
+              {review.editedResponse || review.aiResponse || "回答なし"}
             </p>
           </div>
         )}

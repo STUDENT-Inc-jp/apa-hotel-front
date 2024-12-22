@@ -1,78 +1,81 @@
-// use-review.ts
 "use client";
 
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import type { Review, ReviewFormData } from "@/lib/types/review";
-import { generateAIResponse } from "@/lib/utils/ai-response";
-// ここでapiのcreateReviewをimport
-import { createReview as createReviewApi } from "@/lib/api/reviews";
+import { createReviewApi, updateReviewApi } from "@/lib/api/reviews"; 
+import type { Review } from "@/lib/types/review";
 
+/**
+ * フロントエンド側でレビューの作成・更新などを管理するフック
+ */
 export function useReviews() {
-  const [reviews, setReviews] = useState<Review[]>([]);
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
   const { toast } = useToast();
 
-  const createReview = async (data: ReviewFormData) => {
+  /**
+   * 新規レビュー作成
+   * ReviewFormから受け取った { content, rating, respondentName, hotelId } を利用
+   */
+  const createReview = async (data: {
+    content: string;
+    rating: number;
+    respondentName: string;
+    hotelId: string;
+  }) => {
     try {
-      // サーバーサイドへfetch
-      const serverReview = await createReviewApi(data);
-      // サーバーから返ってきたレビューに対してAI回答生成
-      const aiResponse = await generateAIResponse(data.content, data.rating);
-      const reviewWithResponse = {
-        ...serverReview,
-        aiResponse,
-        editedResponse: aiResponse,
-      };
-
-      // ステート更新
-      setReviews((prev) => [reviewWithResponse, ...prev]);
-      setSelectedReview(reviewWithResponse);
-
+      const newReview = await createReviewApi(data);
+      // 作成後、選択中のレビューをこれに設定して表示する
+      setSelectedReview(newReview);
       toast({
-        title: "AI回答が生成されました",
-        description: "回答を確認・編集してください",
+        title: "レビュー作成成功",
+        description: "AI回答を生成しました。",
       });
-
-      return reviewWithResponse;
-    } catch (error) {
-      console.error("レビューの作成に失敗しました", error);
+    } catch (err) {
+      console.error("Failed to create review:", err);
       toast({
         title: "エラー",
-        description: "レビューの作成に失敗しました",
+        description: "レビュー作成に失敗しました。",
         variant: "destructive",
       });
     }
   };
 
-  const saveReview = (
+  /**
+   * レビュー更新 (AI回答の編集、チェック完了など)
+   * @param review 既存のレビューオブジェクト
+   * @param editedResponse ユーザーが編集した回答本文
+   * @param markAsCompleted trueにするとstatusをcompletedに
+   */
+  const saveReview = async (
     review: Review,
     editedResponse: string,
-    markAsCompleted: boolean = false
+    markAsCompleted: boolean
   ) => {
-    const updatedReview = {
-      ...review,
-      editedResponse,
-      status: markAsCompleted ? ("completed" as const) : review.status,
-    };
-
-    setReviews((prev) =>
-      prev.map((r) => (r.id === review.id ? updatedReview : r))
-    );
-    setSelectedReview(updatedReview);
-
-    toast({
-      title: markAsCompleted ? "チェックが完了しました" : "回答を保存しました",
-      description: markAsCompleted
-        ? "チェック済みタブから確認できます"
-        : "回答が更新されました",
-    });
+    try {
+      const updated = await updateReviewApi({
+        ...review,
+        editedResponse,
+        status: markAsCompleted ? "completed" : "draft",
+      });
+      setSelectedReview(updated);
+      toast({
+        title: "レビュー更新成功",
+        description: markAsCompleted
+          ? "レビューをチェック完了にしました。"
+          : "レビューを更新しました。",
+      });
+    } catch (err) {
+      console.error("Failed to update review:", err);
+      toast({
+        title: "エラー",
+        description: "レビューの更新に失敗しました。",
+        variant: "destructive",
+      });
+    }
   };
 
   return {
-    reviews,
     selectedReview,
-    setSelectedReview,
     createReview,
     saveReview,
   };
