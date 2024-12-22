@@ -1,4 +1,4 @@
-import { Review, ReviewFormData } from "@/lib/types/review";
+import type { Review, ReviewFormData } from "@/lib/types/review";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://apa-hotel.onrender.com/api";
@@ -7,7 +7,7 @@ const API_BASE_URL =
  * 新規レビュー作成 (POST /reviews)
  * バックエンド側で chat_id や created_at などは自動生成される想定
  */
-export async function createReview(data: ReviewFormData): Promise<Review> {
+export async function createReviewApi(data: ReviewFormData): Promise<Review> {
   const response = await fetch(`${API_BASE_URL}/reviews/`, {
     method: "POST",
     headers: {
@@ -62,7 +62,7 @@ export async function getReviews(
  * edited_response や status, categoriesなどを部分更新できる想定。
  * reviewId は chat_id に相当。
  */
-export async function updateReview(
+export async function updateReviewApi(
   reviewId: string,
   data: Partial<Review>
 ): Promise<Review> {
