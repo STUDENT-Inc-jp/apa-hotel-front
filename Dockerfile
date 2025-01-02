@@ -1,26 +1,24 @@
-# ベースイメージとしてNode.jsを使用
-FROM node:18-alpine
-
-# 作業ディレクトリを作成
+# ========== Stage 1: Build ==========
+FROM node:18-alpine as builder
 WORKDIR /app
 
-# 必要なファイルをコピー
 COPY package*.json ./
-
-# パッケージのインストール
 RUN npm install
 
-# アプリケーションコードをコピー
 COPY . .
-
-# ビルドプロセス
+# ここでは "npm run build" だけ。next export はしない。
 RUN npm run build
 
-# ポートを指定
+# ========== Stage 2: Run ==========
+FROM node:18-alpine
+WORKDIR /app
+
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+
 EXPOSE 8080
-
-# 環境変数 PORT を 8080 に設定
 ENV PORT=8080
-
-# アプリケーションの起動コマンド（Next.jsなら、"-p 8080" オプションが必要な場合あり）
+# SSR 起動
 CMD ["npm", "start", "--", "-p", "8080"]
