@@ -1,5 +1,5 @@
 'use client';
-
+export const dynamic = 'force-dynamic'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MessageSquare, CheckCircle2 } from 'lucide-react';
 import { ReviewAnalytics } from '@/components/dashboard/review-analytics';
