@@ -17,7 +17,10 @@ COPY . .
 RUN npm run build
 
 # ポートを指定
-EXPOSE 3000
+EXPOSE 8080
 
-# アプリケーションの起動コマンド
-CMD ["npm", "start"]
+# 環境変数 PORT を 8080 に設定
+ENV PORT=8080
+
+# アプリケーションの起動コマンド（Next.jsなら、"-p 8080" オプションが必要な場合あり）
+CMD ["npm", "start", "--", "-p", "8080"]
