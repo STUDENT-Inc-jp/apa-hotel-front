@@ -1,9 +1,11 @@
+export type ReviewStatus = 'draft' | 'completed';
+
 export interface Review {
   id: string;
   content: string;
   rating: number;
   date: string;
-  status: 'draft' | 'completed';
+  status: ReviewStatus;
   aiResponse?: string;
   editedResponse?: string;
   respondentName: string;
