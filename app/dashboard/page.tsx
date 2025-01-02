@@ -7,11 +7,7 @@ import { useReviews } from '@/lib/hooks/use-reviews';
 
 export default function DashboardPage() {
   // useReviews()が返すものが`undefined`の場合に備えて、デフォルト値を設定
-  const { reviews = [] } = useReviews() || {};
-
-  // または
-  // const { reviews } = useReviews() || {};
-  // const safeReviews = reviews || [];
+  const { reviews = [] } = useReviews() || { reviews: [] };
 
   const draftCount = reviews.filter((r) => r.status === 'draft').length;
   const completedCount = reviews.filter((r) => r.status === 'completed').length;
